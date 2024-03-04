@@ -1,0 +1,26 @@
+{
+  "name": "kinderleap-openapi-3-0",
+  "version": "1.0.11",
+  "description": "The APIs provided by KINDERLEAP Co., Ltd. are designed to support web application.",
+  "main": "index.js",
+  "scripts": {
+    "prestart": "npm install",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "swagger"
+  ],
+  "license": "Unlicense",
+  "private": true,
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "connect": "^3.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "js-yaml": "^3.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.2.0",
+    "nodemon": "^3.1.0",
+    "oas3-tools": "^2.2.3"
+  }
+}

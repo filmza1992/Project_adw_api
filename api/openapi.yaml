@@ -1,0 +1,758 @@
+openapi: 3.0.3
+info:
+  title: KINDERLEAP - OpenAPI 3.0
+  description: 
+    The APIs provided by KINDERLEAP Co., Ltd. are designed to support web application.
+  contact:
+    email: contact@kinderleap.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+servers:
+  - url: http://localhost:9000
+  # - url: https://api.kinderleap.com
+tags:
+  - name: auth
+    description: จัดการการเข้าสู่ระบบ
+  - name: member
+    description: การเข้าสู่ระบบของผู้ใช้งาน
+  - name: admin
+    description: admin
+  - name: vote
+    description: post
+  - name: image
+    description: image
+  
+  
+paths:
+  /user/login:
+    post:
+      tags:
+        - auth
+      summary: Logs in current
+      description: 'การเข้าสู่ระบบของผู้ใช้งาน'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+        required: true
+      operationId: loginUser
+      responses:
+        '200':
+          description: Successful Operation
+        '400':
+          description: Invalid username/password supplied
+      x-swagger-router-controller: Auth
+  /user/logout:
+    get:
+      tags: 
+          - auth
+      summary: Logs out current
+      description: 'Logout user'
+      operationId: logoutUser
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+      x-swagger-router-controller: Auth
+  /user/refresh:
+    post:
+      tags:
+        - auth
+      description: 'Refresh User'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+      operationId: userRefresh
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid username/password supplied
+      x-swagger-router-controller: Auth
+  /user:
+    get:
+      tags:
+        - member
+      summary: ดูสมาชิกทั้งหมด
+      operationId: getAllUser
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Member
+    post:
+      tags:
+        - member
+      description: Sign up Member
+      operationId: addUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Successful operation
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Member 
+            
+  /user/{id}:
+    delete:
+      tags:
+        - member
+      summary: ลบสมาชิก
+      operationId: deleteUserById
+      parameters:
+        - name: id
+          in: path
+          description: user Id
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Member 
+    get:
+      tags:
+        - member
+      summary: ดูสมาชิก
+      operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          description: user Id
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: 
+                    type: integer
+                    format: int32
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/User'
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Member 
+    put:
+      tags:
+        - member
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          description: user ID
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses: 
+        '200':
+          description: Successful operation
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Member 
+  /user/password:
+    put:
+      tags:
+        - member
+      operationId: updateUserPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdatePassword'
+      responses: 
+        '200':
+          description: Successful operation
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Member 
+  /admin:
+    get:
+      tags:
+        - admin
+      summary: ดูสมาชิกทั้งหมด
+      operationId: getAllAdmin
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Admin'
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Admin
+    post:
+      tags:
+        - admin
+      description: Sign up Admin
+      operationId: addAdmin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Admin'
+      responses:
+        '200':
+          description: Successful operation
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Admin
+            
+  /admin/{id}:
+    delete:
+      tags:
+        - admin
+      summary: ลบสมาชิก
+      operationId: deleteAdminById
+      parameters:
+        - name: id
+          in: path
+          description: admin Id
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Admin
+    get:
+      tags:
+        - admin
+      summary: ดูสมาชิก
+      operationId: getAdminById
+      parameters:
+        - name: id
+          in: path
+          description: admin Id
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: 
+                    type: integer
+                    format: int32
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/Admin'
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Admin
+    put:
+      tags:
+        - admin
+      operationId: updateAdmin
+      parameters:
+        - name: id
+          in: path
+          description: admin ID
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Admin'
+      responses: 
+        '200':
+          description: Successful operation
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Admin
+  /vote:
+    get:
+      tags:
+        - vote
+      operationId: getVoteAll
+      responses:
+        '200':
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  properties:
+                    status:
+                      type: integer
+                      format: int32
+                      example: 200
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Vote' 
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid input
+      x-swagger-router-controller: Vote
+    post:
+      tags:
+        - vote
+      operationId: addVote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Vote'
+      responses:
+        '200':
+          description: Successful operation
+        '405':
+          description: Method not allowed
+        '406':
+          description: 'Invalid input'
+      x-swagger-router-controller: Vote
+  /vote/{vote_id}:
+    get:
+      tags:
+        - vote
+      operationId: getVoteById
+      parameters:
+        - name: vote_id
+          in: path
+          required : true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    $ref: '#/components/schemas/Vote'
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Vote
+    put:
+      tags:
+        - vote
+      summary: Update a vote
+      operationId: updateVoteById
+      parameters: 
+        - name: vote_id
+          in : path
+          required: true
+          schema:
+            type: string
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: integer
+                data:
+                  $ref: '#/components/schemas/Vote'
+      responses:
+        '200':
+          description: Successful Update Vote
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    items: 
+                      $ref: '#/components/schemas/Vote'
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Vote
+    delete:
+      tags: 
+        - vote
+      summary: Delete vote
+      operationId: deleteVoteById
+      parameters: 
+        - name: vote_id
+          in : path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ลบ vote เสร็จสิ้น
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: 
+                    type: integer
+                    format: int32
+                  data: 
+                    $ref: '#/components/schemas/Vote'
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Vote
+  /image:
+    get:
+      tags:
+        - image
+      operationId: getImageAll
+      responses:
+        '200':
+            description: Successful operation
+            content:
+              application/json:
+                schema:
+                  properties:
+                    status:
+                      type: integer
+                      format: int32
+                      example: 200
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Image' 
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid input
+      x-swagger-router-controller: Image
+    post:
+      tags:
+        - image
+      operationId: addImage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Image'
+      responses:
+        '200':
+          description: Successful operation
+        '405':
+          description: Method not allowed
+        '406':
+          description: 'Invalid input'
+      x-swagger-router-controller: Image
+  /image/{image_id}:
+    get:
+      tags:
+        - image
+      operationId: getImageById
+      parameters:
+        - name: image_id
+          in: path
+          required : true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    $ref: '#/components/schemas/Image'
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Image
+    put:
+      tags:
+        - image
+      summary: Update a image
+      operationId: updateImageById
+      parameters: 
+        - name: image_id
+          in : path
+          required: true
+          schema:
+            type: string
+      requestBody: 
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: integer
+                data:
+                  $ref: '#/components/schemas/Image'
+      responses:
+        '200':
+          description: Successful Update Image
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    items: 
+                      $ref: '#/components/schemas/Image'
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Image
+    delete:
+      tags: 
+        - image
+      summary: Delete image
+      operationId: deleteImageById
+      parameters: 
+        - name: image_id
+          in : path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ลบ image เสร็จสิ้น
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: 
+                    type: integer
+                    format: int32
+                  data: 
+                    $ref: '#/components/schemas/Image'
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Image
+components:
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        img_url:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        birth_day:
+          type: string
+          format: int64
+        phone:
+          type: string
+        created_at:
+          type: string
+    UserUpdatePassword:
+      properties:
+        email:
+          type: string
+        previous_password:
+          type: string
+        password:
+          type: string
+    UserUpdate:
+      properties:
+        username:
+          type: string
+        img_url:
+          type: string
+        email:
+          type: string
+        birth_day:
+          type: string
+          format: int64
+        phone:
+          type: string
+    Admin:
+      type: object
+      properties:
+        username:
+          type: string
+        img_url:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        birth_day:
+          type: string
+          format: int64
+        phone:
+          type: string
+        created_at:
+          type: string
+    Image:
+      type: object
+      properties:
+        img_url:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        create_at:
+          type: string
+    Vote:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        img:
+          $ref: '#/components/schemas/Image'
+        create_at:
+          type: string
+          format: date-time
+    Package:
+      type: object
+      properties:
+        order:
+          type: integer
+          format: int64
+          example: 8
+        name :
+          type: string
+          example: 'Perosnal package'
+        detail :
+          type: string
+          example: 'This is package for every user'
+        price :
+          type: integer
+          format: int64
+          example: '490'
+        type:
+          type: string
+          example: 'month'
+        photo_url:
+          type: string
+        create_at:
+          type: string
+          format: date-time
+      xml:
+        name: package
+ 
+        
+
+  
+      
+      
