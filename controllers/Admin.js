@@ -52,3 +52,13 @@ module.exports.updateAdmin = function updateAdmin (req, res, next, body, id) {
       utils.writeJson(res, response);
     });
 };
+
+module.exports.updateAdminPassword = function updateAdmin (req, res, next, body) {
+  Admin.updateAdminPassword(body)
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};

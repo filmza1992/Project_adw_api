@@ -148,7 +148,6 @@ exports.updateUser = function (body, id) {
   return new Promise(async function (resolve, reject) {
     try {
       var User = getCollection('user');
-      var previousPassword = body.previous_password;
       var data = await User.findOneAndUpdate({ _id: id }, { $set: body });
       console.log(data);
       resolve({ code: 200, message: "Successful operation" });

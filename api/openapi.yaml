@@ -38,7 +38,7 @@ paths:
             schema:
               type: object
               properties:
-                username:
+                email:
                   type: string
                 password:
                   type: string
@@ -47,39 +47,6 @@ paths:
       responses:
         '200':
           description: Successful Operation
-        '400':
-          description: Invalid username/password supplied
-      x-swagger-router-controller: Auth
-  /user/logout:
-    get:
-      tags: 
-          - auth
-      summary: Logs out current
-      description: 'Logout user'
-      operationId: logoutUser
-      parameters: []
-      responses:
-        default:
-          description: successful operation
-      x-swagger-router-controller: Auth
-  /user/refresh:
-    post:
-      tags:
-        - auth
-      description: 'Refresh User'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                token:
-                  type: string
-      operationId: userRefresh
-      responses:
-        '200':
-          description: successful operation
         '400':
           description: Invalid username/password supplied
       x-swagger-router-controller: Auth
@@ -300,39 +267,6 @@ paths:
         '406':
           description: Invalid Input
       x-swagger-router-controller: Admin
-    get:
-      tags:
-        - admin
-      summary: ดูสมาชิก
-      operationId: getAdminById
-      parameters:
-        - name: id
-          in: path
-          description: admin Id
-          required: true
-          style: simple
-          explode: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status: 
-                    type: integer
-                    format: int32
-                    example: 200
-                  data:
-                    $ref: '#/components/schemas/Admin'
-        '405':
-          description: Method not allowed
-        '406':
-          description: Invalid Input
-      x-swagger-router-controller: Admin
     put:
       tags:
         - admin
@@ -351,7 +285,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Admin'
+              $ref: '#/components/schemas/UserUpdate'
+      responses: 
+        '200':
+          description: Successful operation
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Admin
+  /admin/password:
+    put:
+      tags:
+        - admin
+      operationId: updateAdminPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdatePassword'
       responses: 
         '200':
           description: Successful operation
@@ -640,6 +593,35 @@ paths:
         '406':
           description: Invalid Input
       x-swagger-router-controller: Image
+  /image/user/{user_id}:
+    get:
+      tags:
+        - image
+      operationId: getImageByUserId
+      parameters:
+        - name: user_id
+          in: path
+          required : true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    items:
+                      $ref: '#/components/schemas/Image'
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Image
 components:
   securitySchemes:
     bearerAuth: # arbitrary name for the security scheme
@@ -710,16 +692,44 @@ components:
         img_url:
           type: string
         user:
-          $ref: '#/components/schemas/User'
+          type: object
+          properties:
+            user_id:
+              type: string
+            username:
+              type: string
+            photoURL:
+              type: string
         create_at:
           type: string
     Vote:
       type: object
       properties:
         user:
-          $ref: '#/components/schemas/User'
+          type: object
+          properties:
+            user_id:
+              type: string
+            username:
+              type: string
+            photoURL:
+              type: string
         img:
-          $ref: '#/components/schemas/Image'
+          type: object
+          properties: 
+            img_id:
+              type: string
+            img_url:
+              type: string
+            user:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                username:
+                  type: string
+                photoURL:
+                  type: string
         create_at:
           type: string
           format: date-time
