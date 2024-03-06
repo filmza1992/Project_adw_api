@@ -453,6 +453,35 @@ paths:
         '406':
           description: Invalid Input
       x-swagger-router-controller: Vote
+  /vote/image/{image_id}:
+    get:
+      tags:
+        - vote
+      operationId: getVoteByImage
+      parameters:
+        - name: image_id
+          in: path
+          required : true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    items:
+                      $ref: '#/components/schemas/Vote'
+        '405':
+          description: Method not allowed
+        '406':
+          description: Invalid Input
+      x-swagger-router-controller: Vote
   /image:
     get:
       tags:
@@ -540,12 +569,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                status:
-                  type: integer
-                data:
-                  $ref: '#/components/schemas/Image'
+              $ref: '#/components/schemas/Image'
       responses:
         '200':
           description: Successful Update Image
@@ -684,7 +708,7 @@ components:
           format: int64
         phone:
           type: string
-        created_at:
+        create_at:
           type: string
     Image:
       type: object

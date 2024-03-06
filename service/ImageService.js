@@ -16,11 +16,7 @@ exports.addImage = function(body) {
     try {
       var Image = getCollection('image');
       
-      body.created_at = Date.now();
-       
-
-      
-
+      body.create_at = Date.now();
       var Image = new Image(body);
       Image.save();
 
@@ -71,7 +67,7 @@ exports.getImageAll = function() {
   return new Promise(async function (resolve, reject) {
     var Image = getCollection('image');
     var data = [];
-    data = await User.find();
+    data = await Image.find();
 
     if (!data.empty) {
       resolve({ code: 200, data: data });
@@ -101,20 +97,19 @@ exports.getImageByUserId = function(user_id) {
  * returns inline_response_200_9
  **/
 exports.getImageById = function(image_id) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "data" : {
-    "img_url" : "img_url",
-    "id" : 6,
-    "create_at" : "create_at"
-  },
-  "status" : 0
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+  return new Promise(async function (resolve, reject) {
+    try {
+      var Image = getCollection('image');
+      var data = await Image.findOne({ _id: image_id });
+      console.log(data);
+      if (!data.empty) {
+        resolve({ code: 200, data: data });
+      } else {
+        reject({ code: 400, message: "No user found" });
+
+      }
+    } catch (err) {
+      reject({ code: 400, message: err.message })
     }
   });
 }

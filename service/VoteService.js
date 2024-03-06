@@ -1,5 +1,10 @@
 'use strict';
 
+const mongoose = require('mongoose');
+var schema = new mongoose.Schema({}, { strict: false });
+
+const { getCollection } = require('../utils/helpers');
+const { log } = require('console');
 
 /**
  *
@@ -7,8 +12,18 @@
  * no response value expected for this operation
  **/
 exports.addVote = function(body) {
-  return new Promise(function(resolve, reject) {
-    resolve();
+  return new Promise(async function (resolve, reject) {
+    try {
+      var Vote = getCollection('vote');
+      
+      body.create_at = Date.now();
+      var vote = new Vote(body);
+      vote.save();
+
+      resolve({ code: 200, message: 'created Vote successfully' });
+    } catch (error) {
+      reject({ code: 404, message: error.message });
+    }
   });
 }
 
@@ -20,34 +35,25 @@ exports.addVote = function(body) {
  * returns inline_response_200_7
  **/
 exports.deleteVoteById = function(vote_id) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "data" : {
-    "img" : {
-      "img_url" : "img_url",
-      "id" : 6,
-      "create_at" : "create_at"
-    },
-    "id" : 0,
-    "create_at" : "2000-01-23T04:56:07.000+00:00",
-    "user" : {
-      "birth_day" : "birth_day",
-      "password" : "password",
-      "img_url" : "img_url",
-      "phone" : "phone",
-      "created_at" : "created_at",
-      "id" : 6,
-      "email" : "email",
-      "username" : "username"
-    }
-  },
-  "status" : 0
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+  return new Promise(async function (resolve, reject) {
+    try {
+      var Vote = getCollection('vote');
+      const data = await Vote.findOne({ _id: vote_id });
+      console.log(data);
+
+      if (data) {
+        await data.deleteOne();
+        console.log('Document removed successfully');
+        resolve({
+          code: 200,
+          message: "Record deleted successfully",
+        });
+      } else {
+        console.log('Document not found');
+      }
+
+    } catch (err) {
+      reject({ code: 400, message: err.message });
     }
   });
 }
@@ -58,52 +64,15 @@ exports.deleteVoteById = function(vote_id) {
  * returns inline_response_200_4
  **/
 exports.getVoteAll = function() {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "data" : [ {
-    "img" : {
-      "img_url" : "img_url",
-      "id" : 6,
-      "create_at" : "create_at"
-    },
-    "id" : 0,
-    "create_at" : "2000-01-23T04:56:07.000+00:00",
-    "user" : {
-      "birth_day" : "birth_day",
-      "password" : "password",
-      "img_url" : "img_url",
-      "phone" : "phone",
-      "created_at" : "created_at",
-      "id" : 6,
-      "email" : "email",
-      "username" : "username"
-    }
-  }, {
-    "img" : {
-      "img_url" : "img_url",
-      "id" : 6,
-      "create_at" : "create_at"
-    },
-    "id" : 0,
-    "create_at" : "2000-01-23T04:56:07.000+00:00",
-    "user" : {
-      "birth_day" : "birth_day",
-      "password" : "password",
-      "img_url" : "img_url",
-      "phone" : "phone",
-      "created_at" : "created_at",
-      "id" : 6,
-      "email" : "email",
-      "username" : "username"
-    }
-  } ],
-  "status" : 200
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
+  return new Promise(async function (resolve, reject) {
+    var Vote = getCollection('vote');
+    var data = [];
+    data = await Vote.find();
+
+    if (!data.empty) {
+      resolve({ code: 200, data: data });
     } else {
-      resolve();
+      reject({ code: 404, message: 'no vote found' });
     }
   });
 }
@@ -115,34 +84,37 @@ exports.getVoteAll = function() {
  * returns inline_response_200_5
  **/
 exports.getVoteById = function(vote_id) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "data" : {
-    "img" : {
-      "img_url" : "img_url",
-      "id" : 6,
-      "create_at" : "create_at"
-    },
-    "id" : 0,
-    "create_at" : "2000-01-23T04:56:07.000+00:00",
-    "user" : {
-      "birth_day" : "birth_day",
-      "password" : "password",
-      "img_url" : "img_url",
-      "phone" : "phone",
-      "created_at" : "created_at",
-      "id" : 6,
-      "email" : "email",
-      "username" : "username"
+  return new Promise(async function (resolve, reject) {
+    try {
+      var vote = getCollection('vote');
+      var data = await vote.findOne({ _id: vote_id });
+      console.log(data);
+      if (!data.empty) {
+        resolve({ code: 200, data: data });
+      } else {
+        reject({ code: 400, message: "No vote found" });
+
+      }
+    } catch (err) {
+      reject({ code: 400, message: err.message })
     }
-  },
-  "status" : 0
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+  });
+}
+
+exports.getVoteByImage = function(image_id) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      var vote = getCollection('vote');
+      var data = await vote.find({ 'img.img_id': image_id });
+      console.log(data);
+      if (!data.empty) {
+        resolve({ code: 200, data: data });
+      } else {
+        reject({ code: 400, message: "No vote found" });
+
+      }
+    } catch (err) {
+      reject({ code: 400, message: err.message })
     }
   });
 }
@@ -156,53 +128,16 @@ exports.getVoteById = function(vote_id) {
  * returns inline_response_200_6
  **/
 exports.updateVoteById = function(body,vote_id) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "data" : [ {
-    "img" : {
-      "img_url" : "img_url",
-      "id" : 6,
-      "create_at" : "create_at"
-    },
-    "id" : 0,
-    "create_at" : "2000-01-23T04:56:07.000+00:00",
-    "user" : {
-      "birth_day" : "birth_day",
-      "password" : "password",
-      "img_url" : "img_url",
-      "phone" : "phone",
-      "created_at" : "created_at",
-      "id" : 6,
-      "email" : "email",
-      "username" : "username"
-    }
-  }, {
-    "img" : {
-      "img_url" : "img_url",
-      "id" : 6,
-      "create_at" : "create_at"
-    },
-    "id" : 0,
-    "create_at" : "2000-01-23T04:56:07.000+00:00",
-    "user" : {
-      "birth_day" : "birth_day",
-      "password" : "password",
-      "img_url" : "img_url",
-      "phone" : "phone",
-      "created_at" : "created_at",
-      "id" : 6,
-      "email" : "email",
-      "username" : "username"
-    }
-  } ],
-  "status" : 0
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
+  return new Promise(async function (resolve, reject) {
+    try {
+      var Vote = getCollection('vote');
+      var data = await Vote.findOneAndUpdate({ _id: vote_id }, { $set: body });
+      console.log(data);
+      resolve({ code: 200, message: "Successful operation" });
+    } catch (err) {
+      reject({ code: 400, message: err.message });
     }
   });
-}
+};
+  
 
