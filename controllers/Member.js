@@ -43,6 +43,15 @@ module.exports.getUserById = function getUserById (req, res, next, id) {
     });
 };
 
+module.exports.getUserByEmail = function getUserByEmail (req, res, next, id) {
+  Member.getUserByEmail(id)
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};
 module.exports.updateUser = function updateUser (req, res, next, body, id) {
   Member.updateUser(body, id)
     .then(function (response) {

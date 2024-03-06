@@ -137,7 +137,23 @@ exports.getUserById = function (id) {
   });
 }
 
+exports.getUserByEmail = function (email) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      var User = getCollection('user');
+      var data = await User.findOne({ email: email });
+      console.log(data);
+      if (!data.empty) {
+        resolve({ code: 200, data: data });
+      } else {
+        reject({ code: 400, message: "No user found" });
 
+      }
+    } catch (err) {
+      reject({ code: 400, message: err.message })
+    }
+  });
+}
 /**
  *
  * body User 
