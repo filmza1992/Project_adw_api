@@ -27,6 +27,7 @@ const expressAppConfig = oas3Tools.expressAppConfig(path.join(__dirname, 'api/op
 const openApiApp = expressAppConfig.getApp();
 
 const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(/.*/, cors());
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
