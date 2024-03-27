@@ -141,6 +141,7 @@ exports.getUserByEmail = function (email) {
   return new Promise(async function (resolve, reject) {
     try {
       var User = getCollection('user');
+      console.log(email);
       var data = await User.findOne({ email: email });
       console.log(data);
       if (!data.empty) {

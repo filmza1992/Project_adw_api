@@ -53,6 +53,16 @@ module.exports.getVoteByImage = function getVoteByImage (req, res, next, image_i
     });
 };
 
+module.exports.getVoteByUserId = function getVoteByUserId (req, res, next,user_id) {
+  Vote.getVoteByUserId(user_id)
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};
+
 module.exports.updateVoteById = function updateVoteById (req, res, next, body, vote_id) {
   Vote.updateVoteById(body, vote_id)
     .then(function (response) {
@@ -62,3 +72,5 @@ module.exports.updateVoteById = function updateVoteById (req, res, next, body, v
       utils.writeJson(res, response);
     });
 };
+
+

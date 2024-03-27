@@ -33,6 +33,16 @@ module.exports.getAdminById = function getAdminById (req, res, next, id) {
     });
 };
 
+
+module.exports.getAdminByEmail = function getAdminByEmail (req, res, next, email) {
+  Admin.getAdminByEmail(email)
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};
 module.exports.getAllAdmin = function getAllAdmin (req, res, next) {
   Admin.getAllAdmin()
     .then(function (response) {

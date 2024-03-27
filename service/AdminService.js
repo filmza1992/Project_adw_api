@@ -112,7 +112,43 @@ exports.getAllAdmin = function () {
   });
 }
 
+exports.getAdminByEmail = function (email) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      console.log(email);
+      var Admin = getCollection('admin');
+      var data = await Admin.findOne({ email: email });
+      console.log(data);
+      if (!data.empty) {
+        resolve({ code: 200, data: data });
+      } else {
+        reject({ code: 400, message: "No user found" });
 
+      }
+    } catch (err) {
+      reject({ code: 400, message: err.message })
+    }
+  });
+}
+
+
+exports.getAdminById = function (id) {
+  return new Promise(async function (resolve, reject) {
+    try {
+      var Admin = getCollection('admin');
+      var data = await Admin.findOne({ _id: id });
+      console.log(data);
+      if (!data.empty) {
+        resolve({ code: 200, data: data });
+      } else {
+        reject({ code: 400, message: "No user found" });
+
+      }
+    } catch (err) {
+      reject({ code: 400, message: err.message })
+    }
+  });
+}
 /**
  *
  * body Admin 

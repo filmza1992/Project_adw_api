@@ -119,7 +119,20 @@ exports.getVoteByImage = function(image_id) {
   });
 }
 
-
+exports.getVoteByUserId = function(user_id) {
+  return new Promise(async function (resolve, reject) {
+    var Vote = getCollection('Vote');
+    var data = [];
+    console.log(user_id);
+    data = await Vote.find({'img.user.user_id' : user_id});
+    console.log(data);
+    if (!data.empty) {
+      resolve({ code: 200, data: data });
+    } else {
+      reject({ code: 404, message: 'no user found' });
+    }
+  });
+}
 /**
  * Update a vote
  *
