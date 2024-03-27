@@ -5,59 +5,50 @@ const express = require('express');
 const mongoose = require('mongoose');
 const oas3Tools = require('oas3-tools');
 const bodyParser = require('body-parser');
-
-const serverPort = process.env.PORT;
 const cors = require('cors');
 
+const serverPort = process.env.PORT;
 const mongoString = process.env.DATABASE_URL;
 
-// contect to mongo
-mongoose.connect(mongoString,{
+// Connect to MongoDB
+mongoose.connect(mongoString, {
   dbName: 'Project_adw'
 });
 const database = mongoose.connection;
 
-// swaggerRouter configuration
+// Handle MongoDB connection errors
+database.on('error', (error) => {
+  console.error('MongoDB connection error:', error);
+});
+database.once('connected', () => {
+  console.log('Database Connected');
+});
+
+// SwaggerRouter configuration
 const options = {
   routing: {
     controllers: path.join(__dirname, './controllers'),
   },
 };
 
-const expressAppConfig = oas3Tools.expressAppConfig(path.join(__dirname, 'api/openapi.yaml'), options);
-const openApiApp = expressAppConfig.getApp();
+// Initialize oas3Tools middleware
+const openApiApp = oas3Tools.expressAppConfig(
+  path.join(__dirname, 'api/openapi.yaml'),
+  options
+).getApp();
 
+// Create Express app
 const app = express();
+
+// Middleware
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(/.*/, cors());
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Cache-Control, Pragma, Origin, Authorization, Content-Type, X-Requested-With',
-  );
-  res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
-  if (req.method === 'OPTIONS') {
-    res.status(204).send();
-  } else {
-    next();
-  }
-});
+app.use(bodyParser.json());
 
-for (let i = 2; i < openApiApp._router.stack.length; i++) {
-  app._router.stack.push(openApiApp._router.stack[i]);
-}
+// Add oas3Tools middleware
+app.use(openApiApp);
 
-// checking conect
-database.on('error', (error) => {
-  console.log(error);
-});
-
-database.once('connected', () => {
-  console.log('Database Connected');
-});
-
-// Initialize the Swagger middleware
+// Start the server
 http.createServer(app).listen(serverPort, () => {
   console.log('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
   console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
