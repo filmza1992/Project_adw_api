@@ -1,17 +1,18 @@
 require('dotenv').config();
 const path = require('path');
-const http = require('http');
 const express = require('express');
 const mongoose = require('mongoose');
 const oas3Tools = require('oas3-tools');
 const cors = require('cors');
 
-const serverPort = process.env.PORT;
+const serverPort = process.env.PORT || 3000; // Use port 3000 if PORT environment variable is not set
 const mongoString = process.env.DATABASE_URL;
 
 // Connect to MongoDB
 mongoose.connect(mongoString, {
-  dbName: 'Project_adw'
+  dbName: 'Project_adw',
+  useNewUrlParser: true,
+  useUnifiedTopology: true
 });
 const database = mongoose.connection;
 
@@ -19,7 +20,7 @@ const database = mongoose.connection;
 database.on('error', (error) => {
   console.error('MongoDB connection error:', error);
 });
-database.once('connected', () => {
+database.once('open', () => {
   console.log('Database Connected');
 });
 
@@ -31,10 +32,11 @@ const options = {
 };
 
 // Initialize oas3Tools middleware
-const openApiApp = oas3Tools.expressAppConfig(
+const openApiAppConfig = oas3Tools.expressAppConfig(
   path.join(__dirname, 'api/openapi.yaml'),
   options
-).getApp();
+);
+const openApiApp = openApiAppConfig.getApp();
 
 // Create Express app
 const app = express();
@@ -44,11 +46,8 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Add oas3Tools middleware
-app.use(openApiApp);
+// Use oas3Tools middleware
+app.use(openApiApp); // Use the OpenAPI app
 
-// Start the server
-http.createServer(app).listen(serverPort, () => {
-  console.log('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
-  console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
-});
+// Export the app for Cyclic
+module.exports = app;
