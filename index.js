@@ -4,6 +4,7 @@ const http = require('http');
 const express = require('express');
 const mongoose = require('mongoose');
 const oas3Tools = require('oas3-tools');
+const bodyParser = require('body-parser');
 
 const serverPort = process.env.PORT;
 const cors = require('cors');
