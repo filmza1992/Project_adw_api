@@ -4,7 +4,6 @@ const http = require('http');
 const express = require('express');
 const mongoose = require('mongoose');
 const oas3Tools = require('oas3-tools');
-const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const serverPort = process.env.PORT;
@@ -42,8 +41,8 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Add oas3Tools middleware
 app.use(openApiApp);
