@@ -12,8 +12,6 @@ const mongoString = process.env.DATABASE_URL;
 
 // contect to mongo
 mongoose.connect(mongoString,{
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
   dbName: 'Project_adw'
 });
 const database = mongoose.connection;
